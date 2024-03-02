@@ -2,13 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { BsPlus, BsEyeFill } from "react-icons/bs";
 
-import { ProductType } from "../assests/types"; 
+import { ProductType } from "../assests/types";
 
-interface ProductProps {
-    product: ProductType;
-}
 
-const ProductCard: React.FC<ProductProps> = ({ product }) => {
+const ProductCard: React.FC<{ product: ProductType }> = ({ product }) => {
+    const { image, id, category, title, price } = product
 
     return (
         <div>
@@ -18,20 +16,20 @@ const ProductCard: React.FC<ProductProps> = ({ product }) => {
                     <div className="w-[200px] mx-auto flex justify-center items-center">
                         <img
                             className="max-h-[160px] group-hover:scale-110 transition duration-300"
-                            src={product.image}
+                            src={image}
                             alt=""
                         />
                     </div>
                 </div>
                 {/* buttons */}
                 <div className="absolute top-6 -right-11 group-hover:right-5 p-2 flex flex-col justify-center items-center gap-y-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <button onClick={() => {}}>
+                    <button onClick={() => { }}>
                         <div className="flex justify-center items-center text-white w-12 h-12 bg-teal-500">
                             <BsPlus className="text-3xl" />
                         </div>
                     </button>
                     <Link
-                        to={`/product/${product.id}`}
+                        to={`/product/${id}`}
                         className="w-12 h-12 bg-white flex justify-center items-center text-primary drop-shadow-xl"
                     >
                         <BsEyeFill />
@@ -40,13 +38,13 @@ const ProductCard: React.FC<ProductProps> = ({ product }) => {
             </div>
             {/* category, title & price */}
             <div>
-                <div className="tex-sm capitalize text-gray-500 mb-1">{product.category}</div>
+                <div className="tex-sm capitalize text-gray-500 mb-1">{category}</div>
                 {/* <Link to={'/'}></Link> */}
                 <Link to={`/product/${product.id}`}>
-                    <h2 className="font-semibold mb-1">{product.title}</h2>
+                    <h2 className="font-semibold mb-1">{title}</h2>
                 </Link>
 
-                <h2 className="font-semibbold">$ {product.price}</h2>
+                <h2 className="font-semibbold">$ {price}</h2>
             </div>
         </div>
     );

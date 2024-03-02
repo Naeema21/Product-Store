@@ -7,3 +7,11 @@ export interface ProductType {
     price: number;
     image: string;
 }
+
+export interface CartItemType {
+  id: number;
+  title: string;
+  image: string;
+  price: number;
+  amount: number;
+}

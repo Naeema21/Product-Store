@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 
 import { Link, Outlet } from "react-router-dom";
 // import Logo from "../img/logo.svg";
-import { BsBag, BsShopWindow } from "react-icons/bs";
+import { BsBag, BsPersonCircle, BsShopWindow } from "react-icons/bs";
 
 
 const Header: React.FC = () => {
@@ -30,21 +30,25 @@ const Header: React.FC = () => {
             >
                 <div className="container mx-auto flex items-center justify-between h-full">
                     <Link to={"/"}>
-                        <div className="w-[40px]">
-                            <BsShopWindow />
-                            {/* <img src={Logo} alt="" /> */}
+                        <div>
+                            <BsShopWindow className="text-[30px] font-bold" />
                         </div>
                     </Link>
 
                     {/* cart */}
-                    <div
-                        //   onClick={() => setIsOpen && setIsOpen(!isOpen)}
-                        className="cursor-pointer flex relative"
-                    >
-                        <BsBag className="text-2xl" />
-                        <div className="bg-red-500 absolute -right-2 -bottom-2 text-[12px] w-[18px] h-[18px] text-white rounded-full flex justify-center items-center">
-                            2
-                        </div>
+                    <div className="flex gap-5 justify-center align-center">
+
+                        <Link to={'/cart'}
+                            className="cursor-pointer flex relative"
+                        >
+                            <BsBag className="text-2xl" />
+                            <div className="bg-red-500 absolute -right-2 -bottom-2 text-[12px] w-[18px] h-[18px] text-white rounded-full flex justify-center items-center">
+                                2
+                            </div>
+                        </Link>
+                        <Link to={"/login"}>
+                            <BsPersonCircle className="text-2xl" />
+                        </Link>
                     </div>
                 </div>
             </header>
