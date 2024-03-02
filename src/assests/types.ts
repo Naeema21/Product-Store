@@ -13,5 +13,11 @@ export interface CartItemType {
   title: string;
   image: string;
   price: number;
-  amount: number;
+  quantity: number;
 }
+
+export interface CartItemData {
+  productId: number;
+  quantity: number;
+}
+

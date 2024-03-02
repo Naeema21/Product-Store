@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
+import Loader from "../component/loader";
+import { BASE_URL } from "../services/api";
 import { ProductType } from "../assests/types";
 
 
@@ -8,18 +11,14 @@ const ProductDetails: React.FC = () => {
     const { id } = useParams<string>();
 
     useEffect(() => {
-        fetch(`https://fakestoreapi.com/products/${id}`)
+        fetch(`${BASE_URL}/products/${id}`)
             .then(res => res.json())
             .then(json => setProduct(json))
             .catch(error => console.error('Error fetching product:', error));
     }, [id]);
 
     if (!product) {
-        return (
-            <section className="h-screen flex justify-center items-center">
-                Loading...
-            </section>
-        );
+        return <Loader />
     }
 
     return (

@@ -1,28 +1,28 @@
-import { Link } from "react-router-dom";
-import { IoMdArrowForward } from "react-icons/io";
-import { FiTrash2 } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+import { IoMdArrowForward } from "react-icons/io";
+
 import CartItem from "../component/cartItem";
-import { ProductType } from "../assests/types";
-
-
-
-interface CartItemData {
-    productId: number;
-    quantity: number;
-}
+import Loader from "../component/loader";
+import { BASE_URL } from "../services/api";
+import { CartItemData, CartItemType, ProductType } from "../assests/types";
+import React from "react";
 
 const Cart: React.FC = () => {
     const [cartItems, setCartItems] = useState<CartItemData[]>([]);
     const [products, setProducts] = useState<ProductType[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        fetch('https://fakestoreapi.com/carts/user/2')
+        setLoading(true);
+        fetch(`${BASE_URL}/carts/user/2`)
             .then(res => res.json())
             .then((json) => {
                 setCartItems(json[0].products);
                 fetchProducts(json[0].products);
-            });
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     const fetchProducts = (cartItems: any) => {
@@ -31,14 +31,58 @@ const Cart: React.FC = () => {
             quantity: product.quantity
         }));
         Promise.all(productIdsWithQuantities.map((product: CartItemData) => (
-            fetch(`https://fakestoreapi.com/products/${product.productId}`)
+            fetch(`${BASE_URL}/products/${product.productId}`)
                 .then(res => res.json())
-                .then((productData: ProductType) => ({ ...productData })) // Add 'amount' property to each product
         )))
             .then(products => setProducts(products));
     };
 
+    // Function to update the cart
+    const updateCart = (updatedItem: CartItemType) => {
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}-
+        ${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+        
+        fetch(`${BASE_URL}/carts/${updatedItem.id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                userId: 2,
+                date: formattedDate,
+                products: [{ products: updatedItem.id, quantity: updatedItem.quantity }]
+            })
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json)
+                const updatedCart = cartItems.map(product => {
+                    if (product.productId === updatedItem.id) {
+                        return { ...product, quantity: updatedItem.quantity };
+                    }
+                    return product;
+                });
+                setCartItems(updatedCart);
+            })
+            .catch(error => console.error('Error updating cart:', error));
+    };
 
+
+    const removeItem = (productId: number) => {
+        fetch(`${BASE_URL}/carts/${productId}`, {
+            method: "DELETE"
+        })
+            .then(res => res.json())
+            .then((json) => {
+                const updatedCartItems = cartItems.filter((item) => item.productId !== productId)
+                setCartItems(updatedCartItems)
+                fetchProducts(updatedCartItems)
+            }).catch(error => console.error('Error updating cart:', error));
+    }
+
+
+
+    if (loading) {
+        return <Loader />
+    }
 
     return (
         <section className="pt-[450px] md:pt-32 pb-[400px] md:pb-12 lg:py-32 h-screen flex items-center">
@@ -49,28 +93,23 @@ const Cart: React.FC = () => {
                         <IoMdArrowForward className="text-2xl" />
                     </div>
                 </div>
+
                 <div className="flex flex-col gap-y-2 h-[360px] md:h-[480px] lg:h-[420px] overflow-y-auto overflow-x-hidden border-b">
-                    {products.map((product, index) => {
-                        return <CartItem item={{ ...product, amount: cartItems[index]?.quantity }} />
-                    }
-                    )}
+                    {products.map((product, index) => (
+                        <CartItem key={index}
+                            item={{ ...product, quantity: cartItems[index]?.quantity }}
+                            updateCart={updateCart}
+                            removeItem={removeItem}
+                        />
+                    ))}
                 </div>
-                <div className="flex flex-col gap-y-3  mt-4">
+                <div className="flex flex-col gap-y-3 mt-4">
                     <div className="flex w-full justify-between items-center">
-                        {/* total */}
                         <div className="font-semibold">
                             <span className="mr-2">Subtotal:</span> ${" "}
                             {products.reduce((total, product, index) => total + (product.price * cartItems[index]?.quantity || 0), 0)}
                         </div>
-                        {/* clear cart icon */}
-                        <div
-                            onClick={() => { }}
-                            className="cursor-pointer py-4 bg-red-500 text-white w-12 h-12 flex justify-center items-center text-xl"
-                        >
-                            <FiTrash2 />
-                        </div>
                     </div>
-
                     <Link
                         to={"/"}
                         className="bg-primary flex p-3 justify-center items-center text-white w-full font-medium"

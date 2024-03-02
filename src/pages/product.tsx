@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+
+import Loader from '../component/loader';
 import ProductCard from '../component/productCard';
 import { ProductType } from '../assests/types';
-
-
+import { BASE_URL } from '../services/api';
 
 const ProductList: React.FC = () => {
     const [products, setProducts] = useState<ProductType[]>([]);
@@ -12,7 +13,7 @@ const ProductList: React.FC = () => {
 
     useEffect(() => {
         // Fetch categories
-        fetch('https://fakestoreapi.com/products/categories')
+        fetch(`${BASE_URL}/products/categories`)
             .then(res => res.json())
             .then((json: string[]) => setCategories(['all', ...json]))
             .finally(() => setLoading(false));
@@ -23,9 +24,9 @@ const ProductList: React.FC = () => {
 
     const fetchProducts = (category: string) => {
         setLoading(true);
-        let apiUrl = 'https://fakestoreapi.com/products';
+        let apiUrl = `${BASE_URL}/products`;
         if (category !== 'all') {
-            apiUrl = `https://fakestoreapi.com/products/category/${category}`;
+            apiUrl = `${BASE_URL}/products/category/${category}`;
         }
 
         fetch(apiUrl)
@@ -40,11 +41,7 @@ const ProductList: React.FC = () => {
     }
 
     if (loading) {
-        return (
-            <section className="h-screen flex justify-center items-center">
-                Loading...
-            </section>
-        );
+        return  <Loader />
     }
 
     return (
@@ -64,7 +61,7 @@ const ProductList: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 lg:mx-8 gap-[30px] max-w-sm mx-auto md:max-w-none md:mx-0">
                         {products.map((product) => (
-                            <ProductCard  product={product} />
+                            <ProductCard product={product} />
                         ))}
                     </div>
                 </div>
